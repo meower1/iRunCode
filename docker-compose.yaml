@@ -1,0 +1,9 @@
+services:
+  codegoobler-bot:
+    build: .
+    container_name: codegoobler-bot-container
+    env_file:
+      - app/.env
+    volumes:
+      - ./app:/var/www/app
+    restart: unless-stopped
