@@ -6,4 +6,4 @@ services:
       - app/.env
     volumes:
       - ./app:/var/www/app
-    restart: unless-stopped
+    restart: on-failure:5
