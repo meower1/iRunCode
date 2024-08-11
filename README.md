@@ -25,3 +25,6 @@ We welcome all collaborators to participate in the improvement of Code Goobler! 
 
 **Bot id:** https://t.me/codegoobler_bot <br>
 **Made with ❤️ by 3riangle**
+
+Credits:
+[Piston API](https://github.com/engineer-man/piston)
