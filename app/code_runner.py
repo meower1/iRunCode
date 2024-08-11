@@ -26,6 +26,6 @@ def execute_code(content):
 
 
 # Example usage
-code_content = "print('hello, world')"
-result = execute_code(code_content)
-print(result)
+# code_content = "print('hello, world')"
+# result = execute_code(code_content)
+# print(result)
