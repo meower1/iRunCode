@@ -54,7 +54,8 @@ async def start_command(update: Update, context: ContextTypes.DEFAULT_TYPE) -> N
     ]
     reply_markup = ReplyKeyboardMarkup(keyboard, resize_keyboard=True)
     await update.message.reply_text(
-        "Hello goobler. Select a language to run your code:", reply_markup=reply_markup
+        f"Hello {update.message.from_user.first_name}. Select a language to run your code:",
+        reply_markup=reply_markup,
     )
 
 
@@ -71,7 +72,7 @@ async def run_code_command(
     user_language_state[chat_id] = language  # Store the selected language
 
     # Display "Return" button to exit code input mode
-    keyboard = [[KeyboardButton("Return")]]
+    keyboard = [[KeyboardButton("↪️ Return")]]
     reply_markup = ReplyKeyboardMarkup(keyboard, resize_keyboard=True)
 
     await update.message.reply_text(
@@ -84,7 +85,7 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
     chat_id = update.message.chat_id
     user_code = update.message.text
 
-    if user_code == "Return":
+    if user_code == "↪️ Return":
         # User exits code input mode
         user_language_state.pop(chat_id, None)
         # Show language selection buttons again
