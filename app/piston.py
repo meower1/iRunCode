@@ -3,42 +3,43 @@ import json
 
 
 def execute_code(content, language):
+    # Language version mapping (you can adjust versions as needed)
+    version_mapping = {
+        "python": "3.10.0",
+        "cpp": "10.2.0",
+        "csharp": "10.0",
+        "bash": "5.1.0",
+        "go": "1.16.2",
+        "c": "10.2.0",
+        "brainfuck": "2.7.3",
+        "javascript": "1.32.3",
+        "php": "8.2.3",
+        "rust": "1.68.2",
+        "java": "15.0.2",
+    }
+
     url = "https://emkc.org/api/v2/piston/execute"
     headers = {
         "Content-Type": "application/json",
-        # Add your own cookie or authentication header if needed
     }
 
-    # You might need to handle specific versions per language here, modify if needed
-    language_versions = {
-        "python": "3.10.0",
-        "cpp": "10.2.0",  # Example version for C++
-        "csharp": "6.12.0",  # Example version for C#
-        "bash": "5.2.0",  # Example version for Bash
-    }
-
-    # Get the correct version for the selected language, default to a safe version
-    version = language_versions.get(language, "3.10.0")
-
-    # Prepare the data payload
+    # Set up data with the appropriate language and version
     data = {
         "language": language,
-        "version": version,
-        "files": [{"name": f"my_cool_code.{language}", "content": content}],
+        "version": version_mapping.get(
+            language, "latest"
+        ),  # Default to 'latest' if no version is found
+        "files": [{"name": f"code.{language}", "content": content}],
         "stdin": "",
-        "args": ["1", "2", "3"],
+        "args": [],
         "compile_timeout": 10000,
         "run_timeout": 3000,
         "compile_memory_limit": -1,
         "run_memory_limit": -1,
     }
 
-    # Make the request to the Piston API
     response = requests.post(url, headers=headers, data=json.dumps(data))
+    result = response.json()
 
-    # Handle potential errors from the API
-    if response.status_code == 200:
-        result = response.json()
-        return result["run"]["output"]
-    else:
-        return f"Error: {response.status_code}, {response.text}"
+    # Return the output or error
+    return result.get("run", {}).get("output", "Error executing code.")

@@ -7,7 +7,7 @@ from telegram.ext import (
     ContextTypes,
     filters,
 )
-from piston import execute_code  # The modified version of execute_code
+from piston import execute_code
 from dotenv import load_dotenv
 import os
 
@@ -27,19 +27,34 @@ LANGUAGES = {
     "💻 C++": "cpp",
     "📚 C#": "csharp",
     "🐚 Bash": "bash",
+    "🦄 Go": "go",
+    "🖥 C": "c",
+    "🧠 Brainfuck": "brainfuck",
+    "🖥 JavaScript": "javascript",
+    "🧑‍💻 PHP": "php",
+    "🦀 Rust": "rust",
+    "☕️ Java": "java",
 }
 
 
 async def start_command(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     keyboard = [
-        [KeyboardButton("🐍 Python")],
-        [KeyboardButton("💻 C++"), KeyboardButton("📚 C#")],
-        [KeyboardButton("🐚 Bash")],
+        [
+            KeyboardButton("🐍 Python"),
+            KeyboardButton("💻 C++"),
+            KeyboardButton("📚 C#"),
+        ],
+        [KeyboardButton("🐚 Bash"), KeyboardButton("🦄 Go"), KeyboardButton("🖥 C")],
+        [
+            KeyboardButton("🧠 Brainfuck"),
+            KeyboardButton("🖥 JavaScript"),
+            KeyboardButton("🧑‍💻 PHP"),
+        ],
+        [KeyboardButton("🦀 Rust"), KeyboardButton("☕️ Java")],
     ]
     reply_markup = ReplyKeyboardMarkup(keyboard, resize_keyboard=True)
     await update.message.reply_text(
-        "Hello goobler. I'm Meower, your bot assistant! Select a language to run your code:",
-        reply_markup=reply_markup,
+        "Hello goobler. Select a language to run your code:", reply_markup=reply_markup
     )
 
 
@@ -74,9 +89,18 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
         user_language_state.pop(chat_id, None)
         # Show language selection buttons again
         keyboard = [
-            [KeyboardButton("🐍 Python")],
-            [KeyboardButton("💻 C++"), KeyboardButton("📚 C#")],
-            [KeyboardButton("🐚 Bash")],
+            [
+                KeyboardButton("🐍 Python"),
+                KeyboardButton("💻 C++"),
+                KeyboardButton("📚 C#"),
+            ],
+            [KeyboardButton("🐚 Bash"), KeyboardButton("🦄 Go"), KeyboardButton("🖥 C")],
+            [
+                KeyboardButton("🧠 Brainfuck"),
+                KeyboardButton("🖥 JavaScript"),
+                KeyboardButton("🧑‍💻 PHP"),
+            ],
+            [KeyboardButton("🦀 Rust"), KeyboardButton("☕️ Java")],
         ]
         reply_markup = ReplyKeyboardMarkup(keyboard, resize_keyboard=True)
         await update.message.reply_text(
