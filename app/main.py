@@ -72,7 +72,7 @@ async def about_command(update: Update, context: ContextTypes.DEFAULT_TYPE) -> N
         The bot is built using [python-telegram-bot](https://python-telegram-bot.org/) in python
         And it uses the [Piston API](https://github.com/engineer-man/piston) to run code snippets.
 
-        If you have any questions or suggestions, feel free to reach out to me on [Telegram](https://t.me/meow3r)
+        If you have any questions or suggestions, feel free to reach out to me on [Telegram](https://t.me/meow3r).
         """
     )
 
