@@ -1,5 +1,6 @@
 import logging
 from telegram import Update, ReplyKeyboardMarkup, KeyboardButton
+from telegram.constants import ParseMode
 from telegram.ext import (
     ApplicationBuilder,
     CommandHandler,
@@ -68,12 +69,8 @@ async def help_command(update: Update, context: ContextTypes.DEFAULT_TYPE) -> No
 async def about_command(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     await update.message.reply_text(
         """
-        Hi, Thanks for using my bot. This is an opensource project and the source code can be found [here](https://github.com/meower1/)
-        The bot is built using [python-telegram-bot](https://python-telegram-bot.org/) in python
-        And it uses the [Piston API](https://github.com/engineer-man/piston) to run code snippets.
-
-        If you have any questions or suggestions, feel free to reach out to me on [Telegram](https://t.me/meow3r).
-        """
+        Hi👋, Thanks for using my bot\\. \nThis is an open\\-source project and the source code can be found [here](https://github\\.com/meower1/)\. The bot is built using [python\\-telegram\\-bot](https://python\\-telegram\\-bot\\.org/) in Python\\. And it uses the [Piston API](https://github\\.com/engineer\\-man/piston) to run code snippets\\. \n\nIf you have any questions or suggestions, feel free to reach out to me on [Telegram](https://t\\.me/meow3r)\\. Have fun coding\!💫""",
+        parse_mode=ParseMode.MARKDOWN_V2,
     )
 
 
