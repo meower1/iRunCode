@@ -1,7 +1,7 @@
 services:
-  codegoobler-bot:
+  iruncode-bot:
     build: .
-    container_name: codegoobler
+    container_name: iruncode
     env_file:
       - app/.env
     volumes:
