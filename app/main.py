@@ -62,6 +62,29 @@ async def start_command(update: Update, context: ContextTypes.DEFAULT_TYPE) -> N
     )
 
 
+async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    chat_id = update.message.chat_id
+    chat_type = update.message.chat.type  # Check if it's a private or group chat
+    user_code = update.message.text
+
+    # Check if user is in language selection mode (button press)
+    if chat_id in user_language_state:
+        language = user_language_state[chat_id]
+        # Execute the user's code in the selected language
+        code_output = execute_code(content=user_code, language=language)
+        await update.message.reply_text(
+            f"Output:\n```\n{code_output}\n```", parse_mode="Markdown"
+        )
+        # Clear the user's state after code execution
+        user_language_state.pop(chat_id, None)
+    else:
+        # Only send the message if the chat is private
+        if chat_type == "private":
+            await update.message.reply_text(
+                "Please select a language first using the /run command or the buttons."
+            )
+
+
 async def help_command(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     await update.message.reply_text(
         "🚀 *How to Use the Bot*:\n\n"
@@ -160,56 +183,6 @@ async def run_code_command(
         f"You selected {language}. Please enter your code. Press 'Return' when you're done.",
         reply_markup=reply_markup,
     )
-
-
-async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    chat_id = update.message.chat_id
-    user_code = update.message.text
-
-    if user_code == "↪️ Return":
-        # User exits code input mode
-        user_language_state.pop(chat_id, None)
-        # Show language selection buttons again
-        keyboard = [
-            [
-                KeyboardButton("🐍 Python"),
-                KeyboardButton("💻 C++"),
-                KeyboardButton("📚 C#"),
-            ],
-            [KeyboardButton("🐚 Bash"), KeyboardButton("🦄 Go"), KeyboardButton("🖥 C")],
-            [
-                KeyboardButton("🧠 Brainfuck"),
-                KeyboardButton("🖥 JavaScript"),
-                KeyboardButton("🧑‍💻 PHP"),
-            ],
-            [KeyboardButton("🦀 Rust"), KeyboardButton("☕️ Java")],
-        ]
-        reply_markup = ReplyKeyboardMarkup(keyboard, resize_keyboard=True)
-        await update.message.reply_text(
-            "Exited code input mode. Select another language:",
-            reply_markup=reply_markup,
-        )
-    elif chat_id in user_language_state:
-        language = user_language_state[chat_id]
-        # Execute the user's code in the selected language
-        code_output = execute_code(content=user_code, language=language)
-        await update.message.reply_text(code_output)
-    else:
-        # await update.message.reply_text(
-        #     f"You selected {language}. Please enter your code. Press 'Return' when you're done.",
-        #     reply_markup=reply_markup,
-        # )
-        # await update.message.reply_text(
-        #     "*Invalid syntax. Here's how to use the bot:*\n\n"
-        #     "📝 *Command Format*:\n"
-        #     "`/run <language_name>`\n"
-        #     "`Your code here`\n\n"
-        #     "🔍 *Example (Python)*:\n"
-        #     "`/run python`\n"
-        #     '`print("Hello, World!")`\n\n',
-        #     parse_mode="Markdown",
-        # )
-        pass
 
 
 def error(update, context):
