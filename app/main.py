@@ -116,11 +116,15 @@ async def other_languages(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 async def handle_run_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
     message_text = update.message.text
-    match = re.match(r"^/run (\w+)\n([\s\S]+)", message_text)
+
+    # Match the pattern /run or /run@<bot_username> followed by the language and code
+    match = re.match(r"^/run(?:@\w+)?\s+(\w+)\s+([\s\S]+)", message_text)
 
     if match:
         language = match.group(1).lower()
-        user_code = match.group(2)
+        user_code = match.group(
+            2
+        ).strip()  # Strip leading/trailing whitespace or newlines
 
         # Execute the user's code using the API
         code_output = execute_code(content=user_code, language=language)
@@ -137,8 +141,6 @@ async def handle_run_command(update: Update, context: ContextTypes.DEFAULT_TYPE)
             "🔍 *Example (Python)*:\n"
             "`/run python`\n"
             '`print("Hello, World!")`\n\n'
-            "📚 *Supported Languages*:\n"
-            "`awk, bash, basic, basic.net, befunge93, bqn, brachylog, brainfuck, c, c++, cjam, clojure, cobol, coffeescript, cow, crystal, csharp, csharp.net, d, dart, dash, dragon, elixir, emacs, emojicode, erlang, file, forte, forth, fortran, freebasic, fsharp.net, fsi, go, golfscript, groovy, haskell, husk, iverilog, japt, java, javascript, jelly, julia, kotlin, lisp, llvm_ir, lolcode, lua, matl, nasm, nasm64, nim, ocaml, octave, osabie, paradoc, pascal, perl, php, ponylang, powershell, prolog, pure, pyth, python, python2, racket, raku, retina, rockstar, rscript, ruby, rust, samarium, scala, smalltalk, sqlite3, swift, typescript, vlang, vyxal, yeethon, zig`\n\n"
             "💡 *Tip*: Make sure to enter the command and code in the exact format for it to work!",
             parse_mode="Markdown",
         )
