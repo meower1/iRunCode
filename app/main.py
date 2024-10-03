@@ -64,22 +64,43 @@ async def start_command(update: Update, context: ContextTypes.DEFAULT_TYPE) -> N
 
 async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
     chat_id = update.message.chat_id
-    chat_type = update.message.chat.type  # Check if it's a private or group chat
     user_code = update.message.text
 
-    # Check if user is in language selection mode (button press)
-    if chat_id in user_language_state:
+    # Check if the user pressed the "Return" button
+    if user_code == "↪️ Return":
+        # User exits code input mode
+        user_language_state.pop(chat_id, None)
+        # Show language selection buttons again
+        keyboard = [
+            [
+                KeyboardButton("🐍 Python"),
+                KeyboardButton("💻 C++"),
+                KeyboardButton("📚 C#"),
+            ],
+            [KeyboardButton("🐚 Bash"), KeyboardButton("🦄 Go"), KeyboardButton("🖥 C")],
+            [
+                KeyboardButton("🧠 Brainfuck"),
+                KeyboardButton("🖥 JavaScript"),
+                KeyboardButton("🧑‍💻 PHP"),
+            ],
+            [KeyboardButton("🦀 Rust"), KeyboardButton("☕️ Java")],
+        ]
+        reply_markup = ReplyKeyboardMarkup(keyboard, resize_keyboard=True)
+        await update.message.reply_text(
+            "Exited code input mode. Select another language:",
+            reply_markup=reply_markup,
+        )
+    elif chat_id in user_language_state:
         language = user_language_state[chat_id]
         # Execute the user's code in the selected language
         code_output = execute_code(content=user_code, language=language)
         await update.message.reply_text(
             f"Output:\n```\n{code_output}\n```", parse_mode="Markdown"
         )
-        # Clear the user's state after code execution
-        user_language_state.pop(chat_id, None)
+        # Do not clear the user's state after code execution
     else:
         # Only send the message if the chat is private
-        if chat_type == "private":
+        if update.message.chat.type == "private":
             await update.message.reply_text(
                 "Please select a language first using the /run command or the buttons."
             )
