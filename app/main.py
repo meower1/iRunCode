@@ -1,4 +1,5 @@
 import logging
+import re
 from telegram import Update, ReplyKeyboardMarkup, KeyboardButton
 from telegram.constants import ParseMode
 from telegram.ext import (
@@ -52,17 +53,29 @@ async def start_command(update: Update, context: ContextTypes.DEFAULT_TYPE) -> N
             KeyboardButton("🧑‍💻 PHP"),
         ],
         [KeyboardButton("🦀 Rust"), KeyboardButton("☕️ Java")],
+        [KeyboardButton("👾 Other Languages")],
     ]
     reply_markup = ReplyKeyboardMarkup(keyboard, resize_keyboard=True)
     await update.message.reply_text(
-        f"Hello {update.message.from_user.first_name}. Select a language to run your code:",
+        f"Welcome {update.message.from_user.first_name}. Select a language to run your code:",
         reply_markup=reply_markup,
     )
 
 
 async def help_command(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     await update.message.reply_text(
-        "Use the buttons to select a programming language, then input your code. Press 'Return' to exit code input mode."
+        "🚀 *How to Use the Bot*:\n\n"
+        "1️⃣ Use the `/run` command followed by the language name and your code.\n\n"
+        "📝 *Command Format*:\n"
+        "`/run <language_name>`\n"
+        "`Your code here`\n\n"
+        "🔍 *Example (Python)*:\n"
+        "`/run python`\n"
+        '`print("Hello, World!")`\n\n'
+        "📚 *Supported Languages*:\n"
+        "`awk, bash, basic, basic.net, befunge93, bqn, brachylog, brainfuck, c, c++, cjam, clojure, cobol, coffeescript, cow, crystal, csharp, csharp.net, d, dart, dash, dragon, elixir, emacs, emojicode, erlang, file, forte, forth, fortran, freebasic, fsharp.net, fsi, go, golfscript, groovy, haskell, husk, iverilog, japt, java, javascript, jelly, julia, kotlin, lisp, llvm_ir, lolcode, lua, matl, nasm, nasm64, nim, ocaml, octave, osabie, paradoc, pascal, perl, php, ponylang, powershell, prolog, pure, pyth, python, python2, racket, raku, retina, rockstar, rscript, ruby, rust, samarium, scala, smalltalk, sqlite3, swift, typescript, vlang, vyxal, yeethon, zig`\n\n"
+        "💡 *Tip*: Make sure to enter the command and code in the exact format for it to work!",
+        parse_mode="Markdown",
     )
 
 
@@ -72,6 +85,63 @@ async def about_command(update: Update, context: ContextTypes.DEFAULT_TYPE) -> N
         Hi👋, Thanks for using my bot\\. \nThis is an open\\-source project and the source code can be found [here](https://github\\.com/meower1/)\. The bot is built using [python\\-telegram\\-bot](https://python\\-telegram\\-bot\\.org/) in Python\\. And it uses the [Piston API](https://github\\.com/engineer\\-man/piston) to run code snippets\\. \n\nIf you have any questions or suggestions, feel free to reach out to me on [Telegram](https://t\\.me/meow3r)\\.\nAnd also checkout my [My Channel](https://t\\.me/area51_blog)\nHave fun coding\!💫""",
         parse_mode=ParseMode.MARKDOWN_V2,
     )
+
+
+async def supported_languages(
+    update: Update, context: ContextTypes.DEFAULT_TYPE
+) -> None:
+    await update.message.reply_text(
+        "📚 *Supported Languages*:\n"
+        "`awk, bash, basic, basic.net, befunge93, bqn, brachylog, brainfuck, c, c++, cjam, clojure, cobol, coffeescript, cow, crystal, csharp, csharp.net, d, dart, dash, dragon, elixir, emacs, emojicode, erlang, file, forte, forth, fortran, freebasic, fsharp.net, fsi, go, golfscript, groovy, haskell, husk, iverilog, japt, java, javascript, jelly, julia, kotlin, lisp, llvm_ir, lolcode, lua, matl, nasm, nasm64, nim, ocaml, octave, osabie, paradoc, pascal, perl, php, ponylang, powershell, prolog, pure, pyth, python, python2, racket, raku, retina, rockstar, rscript, ruby, rust, samarium, scala, smalltalk, sqlite3, swift, typescript, vlang, vyxal, yeethon, zig`\n\n",
+        parse_mode="Markdown",
+    )
+
+
+async def other_languages(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    await update.message.reply_text(
+        "🚀 *How to Use the Bot*:\n\n"
+        "1️⃣ Use the `/run` command followed by the language name and your code.\n\n"
+        "📝 *Command Format*:\n"
+        "`/run <language_name>`\n"
+        "`Your code here`\n\n"
+        "🔍 *Example (Python)*:\n"
+        "`/run python`\n"
+        '`print("Hello, World!")`\n\n'
+        "📚 *Supported Languages*:\n"
+        "`awk, bash, basic, basic.net, befunge93, bqn, brachylog, brainfuck, c, c++, cjam, clojure, cobol, coffeescript, cow, crystal, csharp, csharp.net, d, dart, dash, dragon, elixir, emacs, emojicode, erlang, file, forte, forth, fortran, freebasic, fsharp.net, fsi, go, golfscript, groovy, haskell, husk, iverilog, japt, java, javascript, jelly, julia, kotlin, lisp, llvm_ir, lolcode, lua, matl, nasm, nasm64, nim, ocaml, octave, osabie, paradoc, pascal, perl, php, ponylang, powershell, prolog, pure, pyth, python, python2, racket, raku, retina, rockstar, rscript, ruby, rust, samarium, scala, smalltalk, sqlite3, swift, typescript, vlang, vyxal, yeethon, zig`\n\n"
+        "💡 *Tip*: Make sure to enter the command and code in the exact format for it to work!",
+        parse_mode="Markdown",
+    )
+
+
+async def handle_run_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    message_text = update.message.text
+    match = re.match(r"^/run (\w+)\n([\s\S]+)", message_text)
+
+    if match:
+        language = match.group(1).lower()
+        user_code = match.group(2)
+
+        # Execute the user's code using the API
+        code_output = execute_code(content=user_code, language=language)
+        await update.message.reply_text(
+            f"Output:\n```\n{code_output}\n```", parse_mode="Markdown"
+        )
+    else:
+        await update.message.reply_text(
+            "🚀 *How to Use the Bot*:\n\n"
+            "1️⃣ Use the `/run` command followed by the language name and your code.\n\n"
+            "📝 *Command Format*:\n"
+            "`/run <language_name>`\n"
+            "`Your code here`\n\n"
+            "🔍 *Example (Python)*:\n"
+            "`/run python`\n"
+            '`print("Hello, World!")`\n\n'
+            "📚 *Supported Languages*:\n"
+            "`awk, bash, basic, basic.net, befunge93, bqn, brachylog, brainfuck, c, c++, cjam, clojure, cobol, coffeescript, cow, crystal, csharp, csharp.net, d, dart, dash, dragon, elixir, emacs, emojicode, erlang, file, forte, forth, fortran, freebasic, fsharp.net, fsi, go, golfscript, groovy, haskell, husk, iverilog, japt, java, javascript, jelly, julia, kotlin, lisp, llvm_ir, lolcode, lua, matl, nasm, nasm64, nim, ocaml, octave, osabie, paradoc, pascal, perl, php, ponylang, powershell, prolog, pure, pyth, python, python2, racket, raku, retina, rockstar, rscript, ruby, rust, samarium, scala, smalltalk, sqlite3, swift, typescript, vlang, vyxal, yeethon, zig`\n\n"
+            "💡 *Tip*: Make sure to enter the command and code in the exact format for it to work!",
+            parse_mode="Markdown",
+        )
 
 
 async def run_code_command(
@@ -123,8 +193,19 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
         code_output = execute_code(content=user_code, language=language)
         await update.message.reply_text(code_output)
     else:
+        # await update.message.reply_text(
+        #     f"You selected {language}. Please enter your code. Press 'Return' when you're done.",
+        #     reply_markup=reply_markup,
+        # )
         await update.message.reply_text(
-            "Please select a programming language to start running code."
+            "*Invalid syntax. Here's how to use the bot:*\n\n"
+            "📝 *Command Format*:\n"
+            "`/run <language_name>`\n"
+            "`Your code here`\n\n"
+            "🔍 *Example (Python)*:\n"
+            "`/run python`\n"
+            '`print("Hello, World!")`\n\n',
+            parse_mode="Markdown",
         )
 
 
@@ -136,9 +217,12 @@ async def handle_button_press(
     update: Update, context: ContextTypes.DEFAULT_TYPE
 ) -> None:
     selected_language = update.message.text  # Text from button press
+
     if selected_language in LANGUAGES:
         language = LANGUAGES[selected_language]
         await run_code_command(update, context, language)
+    elif selected_language == "👾 Other Languages":
+        await other_languages(update, context)
     else:
         await update.message.reply_text("Please select a valid programming language.")
 
@@ -150,6 +234,10 @@ if __name__ == "__main__":
     updater.add_handler(CommandHandler("start", start_command))
     updater.add_handler(CommandHandler("help", help_command))
     updater.add_handler(CommandHandler("about", about_command))
+    updater.add_handler(CommandHandler("langs", supported_languages))
+    updater.add_handler(
+        CommandHandler("run", handle_run_command)
+    )  # Handle /run command
 
     # Message handler for selecting a language or handling the "Return" button
     updater.add_handler(
