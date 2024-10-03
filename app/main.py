@@ -55,7 +55,7 @@ async def start_command(update: Update, context: ContextTypes.DEFAULT_TYPE) -> N
     ]
     reply_markup = ReplyKeyboardMarkup(keyboard, resize_keyboard=True)
     await update.message.reply_text(
-        f"Hello {update.message.from_user.first_name}. Select a language to run your code:",
+        f"Welcome {update.message.from_user.first_name}. Select a language to run your code:",
         reply_markup=reply_markup,
     )
 
