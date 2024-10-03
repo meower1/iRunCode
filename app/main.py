@@ -197,16 +197,17 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
         #     f"You selected {language}. Please enter your code. Press 'Return' when you're done.",
         #     reply_markup=reply_markup,
         # )
-        await update.message.reply_text(
-            "*Invalid syntax. Here's how to use the bot:*\n\n"
-            "📝 *Command Format*:\n"
-            "`/run <language_name>`\n"
-            "`Your code here`\n\n"
-            "🔍 *Example (Python)*:\n"
-            "`/run python`\n"
-            '`print("Hello, World!")`\n\n',
-            parse_mode="Markdown",
-        )
+        # await update.message.reply_text(
+        #     "*Invalid syntax. Here's how to use the bot:*\n\n"
+        #     "📝 *Command Format*:\n"
+        #     "`/run <language_name>`\n"
+        #     "`Your code here`\n\n"
+        #     "🔍 *Example (Python)*:\n"
+        #     "`/run python`\n"
+        #     '`print("Hello, World!")`\n\n',
+        #     parse_mode="Markdown",
+        # )
+        pass
 
 
 def error(update, context):
