@@ -70,11 +70,11 @@ class TelegramBot:
         self.application.add_handler(CallbackQueryHandler(handle_membership_check_callback, pattern="check_membership"))
         
         # Add message handlers
-        # Handle language buttons and other special buttons
+        # Handle language buttons and other special buttons (only in private chats)
         language_patterns = list(LANGUAGES.keys()) + ["👾 Other Languages", "↪️ Return"]
         self.application.add_handler(
             MessageHandler(
-                filters.TEXT & filters.Regex("|".join(re.escape(pattern) for pattern in language_patterns)),
+                filters.TEXT & filters.Regex("|".join(re.escape(pattern) for pattern in language_patterns)) & filters.ChatType.PRIVATE,
                 handle_button_press,
             )
         )

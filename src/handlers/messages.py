@@ -42,7 +42,7 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE) -> 
     if user_language:
         await execute_user_code(update, context, user_code, user_language)
     else:
-        # Only send message if chat is private
+        # Only send language selection message in private chats, ignore in groups
         if update.message.chat.type == "private":
             await update.message.reply_text(MESSAGES["select_language_first"], parse_mode="Markdown")
 
@@ -54,22 +54,25 @@ async def handle_return_button(update: Update, context: ContextTypes.DEFAULT_TYP
     # Clear user's language selection
     state_manager.clear_user_language(chat_id)
     
-    # Show language selection buttons again
-    keyboard = [
-        [
-            KeyboardButton("🐍 Python"),
-            KeyboardButton("💻 C++"),
-            KeyboardButton("📚 C#"),
-        ],
-        [KeyboardButton("🐚 Bash"), KeyboardButton("🦄 Go"), KeyboardButton("🖥 C")],
-        [
-            KeyboardButton("🧠 Brainfuck"),
-            KeyboardButton("🖥 JavaScript"),
-            KeyboardButton("🧑‍💻 PHP"),
-        ],
-        [KeyboardButton("🦀 Rust"), KeyboardButton("☕️ Java")],
-    ]
-    reply_markup = ReplyKeyboardMarkup(keyboard, resize_keyboard=True)
+    # Only show keyboard buttons in private chats, not in groups
+    reply_markup = None
+    if update.message.chat.type == "private":
+        # Show language selection buttons again
+        keyboard = [
+            [
+                KeyboardButton("🐍 Python"),
+                KeyboardButton("💻 C++"),
+                KeyboardButton("📚 C#"),
+            ],
+            [KeyboardButton("🐚 Bash"), KeyboardButton("🦄 Go"), KeyboardButton("🖥 C")],
+            [
+                KeyboardButton("🧠 Brainfuck"),
+                KeyboardButton("🖥 JavaScript"),
+                KeyboardButton("🧑‍💻 PHP"),
+            ],
+            [KeyboardButton("🦀 Rust"), KeyboardButton("☕️ Java")],
+        ]
+        reply_markup = ReplyKeyboardMarkup(keyboard, resize_keyboard=True)
     
     await update.message.reply_text(
         MESSAGES["exit_code_mode"],
@@ -157,17 +160,52 @@ async def handle_run_command(update: Update, context: ContextTypes.DEFAULT_TYPE)
             await update.message.reply_text(MESSAGES["service_unavailable"])
     
     else:
-        # Show usage instructions
+        # Show improved usage instructions
         help_text = (
-            "🚀 *How to Use the Bot*:\n\n"
-            "1️⃣ Use the `/run` command followed by the language name and your code.\n\n"
-            "📝 *Command Format*:\n"
+            "🚀 **How to Use iRunCode Bot**\n\n"
+            "**📝 Command Format:**\n"
             "`/run <language_name>`\n"
-            "`Your code here`\n\n"
-            "🔍 *Example (Python)*:\n"
-            "`/run python`\n"
-            '`print("Hello, World!")`\n\n'
-            "💡 *Tip*: Make sure to enter the command and code in the exact format for it to work!"
+            "`Your code here (can be multiple lines)`\n\n"
+            "**🔍 Examples:**\n\n"
+            "**Python:**\n"
+            "```\n"
+            "/run python\n"
+            "print('Hello, World!')\n"
+            "for i in range(3):\n"
+            "    print(f'Count: {i}')\n"
+            "```\n\n"
+            "**JavaScript:**\n"
+            "```\n"
+            "/run javascript\n"
+            "console.log('Hello, World!');\n"
+            "const nums = [1, 2, 3];\n"
+            "console.log(nums.map(x => x * 2));\n"
+            "```\n\n"
+            "**C++:**\n"
+            "```\n"
+            "/run cpp\n"
+            "#include <iostream>\n"
+            "int main() {\n"
+            "    std::cout << \"Hello, World!\" << std::endl;\n"
+            "    return 0;\n"
+            "}\n"
+            "```\n\n"
+            "**🌟 Popular Languages:**\n"
+            "• `python` - Python 3.10\n"
+            "• `javascript` - JavaScript\n"
+            "• `java` - Java 15\n"
+            "• `cpp` - C++ 10.2\n"
+            "• `csharp` - C# 10.0\n"
+            "• `go` - Go 1.16\n"
+            "• `rust` - Rust 1.68\n"
+            "• `php` - PHP 8.2\n\n"
+            "**💡 Pro Tips:**\n"
+            "• Language names are case-sensitive\n"
+            "• Multi-line code is fully supported\n"
+            "• Use `/langs` to see all supported languages\n"
+            "• Use `/help` for more detailed information\n"
+            "• Most standard libraries are available\n\n"
+            "**⚡ Quick Start:** Just type `/run python` then your Python code!"
         )
         await update.message.reply_text(help_text, parse_mode="Markdown")
 
@@ -219,9 +257,12 @@ async def enter_code_mode(update: Update, context: ContextTypes.DEFAULT_TYPE,
     # Set user's selected language
     state_manager.set_user_language(chat_id, language)
     
-    # Display "Return" button to exit code input mode
-    keyboard = [[KeyboardButton("↪️ Return")]]
-    reply_markup = ReplyKeyboardMarkup(keyboard, resize_keyboard=True)
+    # Only show return button in private chats, not in groups
+    reply_markup = None
+    if update.message.chat.type == "private":
+        # Display "Return" button to exit code input mode
+        keyboard = [[KeyboardButton("↪️ Return")]]
+        reply_markup = ReplyKeyboardMarkup(keyboard, resize_keyboard=True)
     
     message = MESSAGES["language_selected"].format(language=language)
     await update.message.reply_text(message, reply_markup=reply_markup)

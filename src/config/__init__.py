@@ -27,9 +27,11 @@ class Config:
     PISTON_RETRY_DELAY: float = float(os.getenv("PISTON_RETRY_DELAY", "1.0"))
     
     # Bot Configuration
-    BOT_TIMEOUT: int = int(os.getenv("BOT_TIMEOUT", "30"))
-    POOLING_TIMEOUT: int = int(os.getenv("POOLING_TIMEOUT", "30"))
+    BOT_TIMEOUT: int = int(os.getenv("BOT_TIMEOUT", "60"))  # Increased from 30
+    POOLING_TIMEOUT: int = int(os.getenv("POOLING_TIMEOUT", "60"))  # Increased from 30
     CONNECTION_POOL_SIZE: int = int(os.getenv("CONNECTION_POOL_SIZE", "8"))
+    CONNECT_TIMEOUT: int = int(os.getenv("CONNECT_TIMEOUT", "30"))
+    READ_TIMEOUT: int = int(os.getenv("READ_TIMEOUT", "30"))
     
     # Rate Limiting
     RATE_LIMIT_WINDOW: int = int(os.getenv("RATE_LIMIT_WINDOW", "60"))
@@ -97,7 +99,17 @@ VERSION_MAPPING: Dict[str, str] = {
 
 # Bot messages
 MESSAGES: Dict[str, str] = {
-    "welcome": "Welcome {name}. Select a language to run your code:",
+    "welcome": "Welcome, {name}.\n\n"
+               "*iRunCode Bot* - Execute code in 50+ programming languages.\n\n"
+               "*Usage:*\n"
+               "`/run <language>`\n"
+               "`your code here`\n\n"
+               "*Commands:*\n"
+               "• `/help` - Complete usage guide\n"
+               "• `/langs` - See all supported languages\n"
+               "• `/about` - Learn more about this bot\n\n"
+               "🌟 *Ready to code?* Try `/run python` with your first script!\n"
+               "No setup needed - just code and run! ✨",
     "language_selected": "You selected {language}. Please enter your code. Press 'Return' when you're done.",
     "exit_code_mode": "Exited code input mode. Select another language:",
     "select_language_first": "🚀 **iRunCode Bot - How to Use**\n\n"
