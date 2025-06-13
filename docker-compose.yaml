@@ -3,7 +3,24 @@ services:
     build: .
     container_name: iruncode
     env_file:
-      - app/.env
+      - .env
     volumes:
-      - ./app:/var/www/app
-    restart: on-failure:5
+      - ./src:/var/www/src
+      - ./logs:/var/www/logs
+    restart: always
+    healthcheck:
+      test: ["CMD", "python", "-c", "import sys; sys.exit(0)"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+        reservations:
+          memory: 256M
+    environment:
+      - LOG_LEVEL=INFO
+      - HEALTH_CHECK_INTERVAL=300
+      - MAX_MEMORY_USAGE=256
