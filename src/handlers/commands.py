@@ -121,7 +121,7 @@ async def about_command(update: Update, context: ContextTypes.DEFAULT_TYPE) -> N
         "If you have any questions or suggestions, feel free to reach out to me on "
         "[Telegram](https://t\\.me/meow3r)\\.\n"
         "And also checkout my [My Channel](https://t\\.me/area51_blog)\n"
-        "Have fun coding!💫"
+        "Have fun coding\\!💫"
     )
     
     await update.message.reply_text(about_text, parse_mode=ParseMode.MARKDOWN_V2)
