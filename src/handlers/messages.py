@@ -32,11 +32,6 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE) -> 
     # Update user activity
     state_manager.update_user_activity(user_id)
     
-    # Check if the user pressed the "Return" button
-    if user_code == "↪️ Return":
-        await handle_return_button(update, context)
-        return
-    
     # Check if user has selected a language
     user_language = state_manager.get_user_language(chat_id)
     if user_language:
@@ -44,7 +39,7 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE) -> 
     else:
         # Only send message if chat is private
         if update.message.chat.type == "private":
-            await update.message.reply_text(MESSAGES["select_language_first"])
+            await update.message.reply_text(MESSAGES["select_language_first"], parse_mode="Markdown")
 
 
 async def handle_return_button(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
@@ -176,14 +171,29 @@ async def handle_button_press(update: Update, context: ContextTypes.DEFAULT_TYPE
     # Update user activity
     state_manager.update_user_activity(user_id)
     
-    if selected_language in LANGUAGES:
-        language = LANGUAGES[selected_language]
-        await enter_code_mode(update, context, language)
-    elif selected_language == "👾 Other Languages":
+    # Add debug logging
+    logger.info(f"User {user_id} pressed button: '{selected_language}'")
+    
+    # Handle special buttons first
+    if selected_language == "👾 Other Languages":
+        logger.info("Other Languages button pressed - calling other_languages_info")
         from .commands import other_languages_info
         await other_languages_info(update, context)
+        return
+    elif selected_language == "↪️ Return":
+        await handle_return_button(update, context)
+        return
+    
+    # Handle regular language buttons
+    logger.info(f"Available languages: {list(LANGUAGES.keys())}")
+    
+    if selected_language in LANGUAGES:
+        language = LANGUAGES[selected_language]
+        logger.info(f"Language selected: {language}")
+        await enter_code_mode(update, context, language)
     else:
-        await update.message.reply_text(MESSAGES["invalid_language"])
+        logger.warning(f"Invalid language button pressed: '{selected_language}'")
+        await update.message.reply_text(MESSAGES["invalid_language"], parse_mode="Markdown")
 
 
 async def enter_code_mode(update: Update, context: ContextTypes.DEFAULT_TYPE, 

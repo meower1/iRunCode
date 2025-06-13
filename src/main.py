@@ -3,6 +3,7 @@ Main application entry point.
 """
 
 import asyncio
+import re
 import signal
 import sys
 from telegram.ext import (
@@ -64,9 +65,11 @@ class TelegramBot:
         self.application.add_handler(CommandHandler("run", handle_run_command))
         
         # Add message handlers
+        # Handle language buttons and other special buttons
+        language_patterns = list(LANGUAGES.keys()) + ["👾 Other Languages", "↪️ Return"]
         self.application.add_handler(
             MessageHandler(
-                filters.TEXT & filters.Regex("|".join(LANGUAGES.keys())),
+                filters.TEXT & filters.Regex("|".join(re.escape(pattern) for pattern in language_patterns)),
                 handle_button_press,
             )
         )
