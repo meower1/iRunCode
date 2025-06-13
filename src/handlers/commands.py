@@ -30,26 +30,29 @@ async def start_command(update: Update, context: ContextTypes.DEFAULT_TYPE) -> N
         await send_channel_membership_message(update)
         return
     
-    # Create keyboard with language options
-    keyboard = [
-        [
-            KeyboardButton("🐍 Python"),
-            KeyboardButton("💻 C++"),
-            KeyboardButton("📚 C#"),
-        ],
-        [KeyboardButton("🐚 Bash"), KeyboardButton("🦄 Go"), KeyboardButton("🖥 C")],
-        [
-            KeyboardButton("🧠 Brainfuck"),
-            KeyboardButton("🖥 JavaScript"),
-            KeyboardButton("🧑‍💻 PHP"),
-        ],
-        [KeyboardButton("🦀 Rust"), KeyboardButton("☕️ Java")],
-        [KeyboardButton("👾 Other Languages")],
-    ]
-    reply_markup = ReplyKeyboardMarkup(keyboard, resize_keyboard=True)
+    # Only show keyboard buttons in private chats, not in groups
+    reply_markup = None
+    if update.message.chat.type == "private":
+        # Create keyboard with language options
+        keyboard = [
+            [
+                KeyboardButton("🐍 Python"),
+                KeyboardButton("💻 C++"),
+                KeyboardButton("📚 C#"),
+            ],
+            [KeyboardButton("🐚 Bash"), KeyboardButton("🦄 Go"), KeyboardButton("🖥 C")],
+            [
+                KeyboardButton("🧠 Brainfuck"),
+                KeyboardButton("🖥 JavaScript"),
+                KeyboardButton("🧑‍💻 PHP"),
+            ],
+            [KeyboardButton("🦀 Rust"), KeyboardButton("☕️ Java")],
+            [KeyboardButton("👾 Other Languages")],
+        ]
+        reply_markup = ReplyKeyboardMarkup(keyboard, resize_keyboard=True)
     
     welcome_message = MESSAGES["welcome"].format(name=user_name)
-    await update.message.reply_text(welcome_message, reply_markup=reply_markup)
+    await update.message.reply_text(welcome_message, reply_markup=reply_markup, parse_mode="Markdown")
 
 
 @handle_errors("Sorry, an error occurred while processing the help command.")
