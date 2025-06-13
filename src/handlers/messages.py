@@ -10,7 +10,7 @@ from ..config import LANGUAGES, MESSAGES
 from ..services.state import state_manager
 from ..services.piston import piston_service, PistonAPIError
 from ..utils.logger import get_logger
-from ..utils.helpers import handle_errors, RateLimiter
+from ..utils.helpers import handle_errors, RateLimiter, check_channel_membership, send_channel_membership_message
 from ..config import Config
 
 logger = get_logger(__name__)
@@ -31,6 +31,11 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE) -> 
     
     # Update user activity
     state_manager.update_user_activity(user_id)
+    
+    # Check channel membership (only for private chats)
+    if not await check_channel_membership(update, context):
+        await send_channel_membership_message(update)
+        return
     
     # Check if user has selected a language
     user_language = state_manager.get_user_language(chat_id)
@@ -113,6 +118,11 @@ async def handle_run_command(update: Update, context: ContextTypes.DEFAULT_TYPE)
     # Update user activity
     state_manager.update_user_activity(user_id)
     
+    # Check channel membership (only for private chats)
+    if not await check_channel_membership(update, context):
+        await send_channel_membership_message(update)
+        return
+    
     # Rate limiting check
     if not rate_limiter.is_allowed(str(user_id)):
         await update.message.reply_text(MESSAGES["rate_limited"])
@@ -170,6 +180,11 @@ async def handle_button_press(update: Update, context: ContextTypes.DEFAULT_TYPE
     
     # Update user activity
     state_manager.update_user_activity(user_id)
+    
+    # Check channel membership (only for private chats)
+    if not await check_channel_membership(update, context):
+        await send_channel_membership_message(update)
+        return
     
     # Add debug logging
     logger.info(f"User {user_id} pressed button: '{selected_language}'")

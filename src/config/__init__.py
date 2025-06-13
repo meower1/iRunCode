@@ -39,6 +39,10 @@ class Config:
     HEALTH_CHECK_INTERVAL: int = int(os.getenv("HEALTH_CHECK_INTERVAL", "300"))  # 5 minutes
     MAX_MEMORY_USAGE: int = int(os.getenv("MAX_MEMORY_USAGE", "256"))  # MB
     
+    # Channel Membership Check Configuration
+    REQUIRE_CHANNEL_MEMBERSHIP: bool = os.getenv("REQUIRE_CHANNEL_MEMBERSHIP", "false").lower() == "true"
+    REQUIRED_CHANNEL_ID: str = os.getenv("REQUIRED_CHANNEL_ID", "@area51_blog")
+    
     @classmethod
     def validate(cls) -> None:
         """Validate configuration."""

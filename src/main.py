@@ -10,6 +10,7 @@ from telegram.ext import (
     ApplicationBuilder,
     CommandHandler,
     MessageHandler,
+    CallbackQueryHandler,
     filters,
 )
 
@@ -27,6 +28,7 @@ from .handlers.messages import (
     handle_run_command,
     handle_button_press,
 )
+from .utils.helpers import handle_membership_check_callback
 from .config import LANGUAGES
 
 # Initialize logging
@@ -63,6 +65,9 @@ class TelegramBot:
         self.application.add_handler(CommandHandler("about", about_command))
         self.application.add_handler(CommandHandler("langs", supported_languages_command))
         self.application.add_handler(CommandHandler("run", handle_run_command))
+        
+        # Add callback query handler for membership check
+        self.application.add_handler(CallbackQueryHandler(handle_membership_check_callback, pattern="check_membership"))
         
         # Add message handlers
         # Handle language buttons and other special buttons

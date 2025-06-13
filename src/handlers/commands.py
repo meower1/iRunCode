@@ -9,7 +9,7 @@ from telegram.ext import ContextTypes
 from ..config import LANGUAGES, SUPPORTED_LANGUAGES_TEXT, MESSAGES, LANGUAGE_CATEGORIES, USAGE_EXAMPLES
 from ..services.state import state_manager
 from ..utils.logger import get_logger
-from ..utils.helpers import handle_errors
+from ..utils.helpers import handle_errors, check_channel_membership, send_channel_membership_message
 
 logger = get_logger(__name__)
 
@@ -24,6 +24,11 @@ async def start_command(update: Update, context: ContextTypes.DEFAULT_TYPE) -> N
     
     # Update user activity
     state_manager.update_user_activity(user_id)
+    
+    # Check channel membership (only for private chats)
+    if not await check_channel_membership(update, context):
+        await send_channel_membership_message(update)
+        return
     
     # Create keyboard with language options
     keyboard = [
@@ -127,6 +132,11 @@ async def supported_languages_command(update: Update, context: ContextTypes.DEFA
     
     state_manager.update_user_activity(user_id)
     
+    # Check channel membership (only for private chats)
+    if not await check_channel_membership(update, context):
+        await send_channel_membership_message(update)
+        return
+    
     # Import the new language categories
     from ..config import LANGUAGE_CATEGORIES
     
@@ -183,6 +193,11 @@ async def other_languages_info(update: Update, context: ContextTypes.DEFAULT_TYP
     logger.info(f"User {user_id} requested other languages info")
     
     state_manager.update_user_activity(user_id)
+    
+    # Check channel membership (only for private chats)
+    if not await check_channel_membership(update, context):
+        await send_channel_membership_message(update)
+        return
     
     # Import the new language categories
     from ..config import LANGUAGE_CATEGORIES, USAGE_EXAMPLES
