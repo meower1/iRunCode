@@ -9,6 +9,7 @@ A professional Telegram bot for executing code snippets in multiple programming 
 - **Professional Architecture**: Modular, maintainable code structure
 - **Error Handling**: Comprehensive error handling and retry mechanisms
 - **Rate Limiting**: Built-in rate limiting to prevent abuse
+- **Channel Membership**: Optional requirement for users to join a specific channel
 - **Health Monitoring**: Automatic health checks and resource management
 - **Docker Support**: Containerized deployment with health checks
 - **Graceful Shutdown**: Proper cleanup on termination
@@ -110,6 +111,27 @@ iRunCode/
    docker-compose down
    ```
 
+## Configuration
+
+### Channel Membership Requirements
+
+The bot supports optional channel membership requirements to encourage users to join your channel before using the bot:
+
+1. **Enable the feature** by setting `REQUIRE_CHANNEL_MEMBERSHIP=true` in your `.env` file
+2. **Set the channel** using `REQUIRED_CHANNEL_ID` with either:
+   - Public channel: `@your_channel_username`
+   - Private channel: `-1234567890123` (channel ID)
+
+When enabled, users who aren't members of the specified channel will receive a message prompting them to join before they can use the bot's features.
+
+### Getting Channel ID for Private Channels
+
+For private channels, you need the channel ID:
+
+1. Add your bot as an admin to the channel
+2. Forward a message from the channel to @userinfobot
+3. Use the channel ID (negative number) in your configuration
+
 ## Environment Variables
 
 Create a `.env` file in the root directory with the following variables:
@@ -132,6 +154,10 @@ RATE_LIMIT_WINDOW=60
 RATE_LIMIT_MAX_REQUESTS=10
 HEALTH_CHECK_INTERVAL=300
 MAX_MEMORY_USAGE=256
+
+# Channel Membership Requirements (Optional)
+REQUIRE_CHANNEL_MEMBERSHIP=false
+REQUIRED_CHANNEL_ID=@area51_blog
 ```
 
 ## Usage
@@ -183,6 +209,13 @@ Python, C++, C#, JavaScript, Java, Go, Rust, PHP, C, Bash, and 40+ more language
 4. **Type Hints**: Full type annotations for better code quality
 5. **Async/Await**: Proper asynchronous programming throughout
 6. **Docker Support**: Production-ready containerization
+7. **Channel Integration**: Optional channel membership requirements
+
+### User Management Features
+
+1. **Channel Membership**: Configurable requirement for users to join a specific channel before using the bot
+2. **Automatic Verification**: The bot automatically checks if users are members of the required channel
+3. **Flexible Configuration**: Can be enabled/disabled and configured for any public or private channel
 
 ### Performance Enhancements
 
